@@ -76,7 +76,7 @@ namespace CompositionSampleGallery.Samples.SDK_14393.SwipeScroller.Behaviors
             if (HittestContent == null) return;
 
             // Configure hittestVisual size for the interaction (size needs to be explicitly set in order for the hittesting to work correctly due to XAML-COMP interop policy)
-            _hittestVisual.Size = new Vector2((float)HittestContent.ActualWidth, (float)HittestContent.ActualHeight);
+            //_hittestVisual.Size = new Vector2((float)HittestContent.ActualWidth/2, (float)HittestContent.ActualHeight/2);
 
             _props = _compositor.CreatePropertySet();
 
@@ -90,13 +90,15 @@ namespace CompositionSampleGallery.Samples.SDK_14393.SwipeScroller.Behaviors
             VisualInteractionSource interactionSource = VisualInteractionSource.Create(_hittestVisual);
 
             //Configure for y-direction panning
+            interactionSource.PositionXSourceMode = InteractionSourceMode.EnabledWithInertia;
             interactionSource.PositionYSourceMode = InteractionSourceMode.EnabledWithInertia;
 
             //Create tracker and associate interaction source
             _tracker.InteractionSources.Add(interactionSource);
 
             //Configure tracker boundaries
-            _tracker.MaxPosition = new Vector3((float)HittestContent.ActualHeight);
+            _tracker.MaxPosition = new Vector3((float)HittestContent.ActualHeight * 2);
+            _tracker.MinPosition = new Vector3((float)HittestContent.ActualHeight * -2);
 
             SpriteVisual shadowVisual = _compositor.CreateSpriteVisual();
             shadowVisual.Size = photoVisual.Size;
@@ -106,10 +108,26 @@ namespace CompositionSampleGallery.Samples.SDK_14393.SwipeScroller.Behaviors
 
             ConfigureRestingPoints();
 
+            HittestContent.PointerCanceled += (s, a) =>
+            {
+
+            };
+
+            HittestContent.PointerReleased += (s, a) =>
+            {
+
+            };
+            HittestContent.PointerExited += (s, a) =>
+            {
+                
+            };
+
             HittestContent.PointerPressed += (s, a) =>
             {
                 // Capture the touch manipulation to the InteractionTracker for automatic handling
-                if (a.Pointer.PointerDeviceType == Windows.Devices.Input.PointerDeviceType.Touch)
+                if (a.Pointer.PointerDeviceType == Windows.Devices.Input.PointerDeviceType.Touch ||
+                a.Pointer.PointerDeviceType == Windows.Devices.Input.PointerDeviceType.Pen 
+                )
                 {
                     try
                     {
@@ -143,7 +161,7 @@ namespace CompositionSampleGallery.Samples.SDK_14393.SwipeScroller.Behaviors
             endpoint1.SetCondition(trackerTarget.NaturalRestingPosition.Y < (trackerTarget.MaxPosition.Y - trackerTarget.MinPosition.Y) / 2);
 
             // Set the result for this condition to make the InteractionTracker's y position the minimum y position
-            endpoint1.SetRestingValue(trackerTarget.MinPosition.Y);
+            endpoint1.SetRestingValue((trackerTarget.MaxPosition.Y + trackerTarget.MinPosition.Y) / 2);
 
             // Setup a possible inertia endpoint (snap point) for the InteractionTracker's maximum position
             var endpoint2 = InteractionTrackerInertiaRestingValue.Create(_compositor);
@@ -163,19 +181,26 @@ namespace CompositionSampleGallery.Samples.SDK_14393.SwipeScroller.Behaviors
             var shadow = _compositor.CreateDropShadow();
             shadowVisual.Shadow = shadow;
             _props.InsertScalar("progress", 0);
+            _props.InsertScalar("progressX", 0);
 
             // Create an animation that tracks the progress of the manipulation and stores it in a the PropertySet _props
             var trackerNode = _tracker.GetReference();
-            _props.StartAnimation("progress", trackerNode.Position.Y / trackerNode.MaxPosition.Y);
+            _props.StartAnimation("progress", trackerNode.Position.Y);
+            _props.StartAnimation("progressX", trackerNode.Position.X);
 
             // Create an animation that scales up the infoVisual based on the manipulation progress
             var propSetProgress = _props.GetReference().GetScalarProperty("progress");
             infoVisual.StartAnimation("Scale", EF.Vector3(1, 1, 1) * EF.Lerp(1, 1.2f, propSetProgress));
 
             // Create an animation that changes the offset of the photoVisual and shadowVisual based on the manipulation progress
-            var photoOffsetExp = -120f * _props.GetReference().GetScalarProperty("Progress");
+            var photoOffsetExp = -1f * _props.GetReference().GetScalarProperty("Progress");
+            var photoOffsetExp2 = -1f * _props.GetReference().GetScalarProperty("ProgressX");
+
             photoVisual.StartAnimation("offset.y", photoOffsetExp);
             shadowVisual.StartAnimation("offset.y", photoOffsetExp);
+
+            photoVisual.StartAnimation("offset.x", photoOffsetExp2);
+            shadowVisual.StartAnimation("offset.x", photoOffsetExp2);
 
             // Create an animation that fades in the info visual based on the manipulation progress
             infoVisual.StartAnimation("opacity", EF.Lerp(0, 1, _props.GetReference().GetScalarProperty("Progress")));

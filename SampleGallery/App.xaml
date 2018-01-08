@@ -324,7 +324,7 @@
                 <Setter Property="ScrollViewer.HorizontalScrollMode" Value="Disabled"/>
                 <Setter Property="ScrollViewer.IsHorizontalRailEnabled" Value="False"/>
                 <Setter Property="ScrollViewer.VerticalScrollMode" Value="Enabled"/>
-                <Setter Property="ScrollViewer.IsVerticalRailEnabled" Value="True"/>
+                <Setter Property="ScrollViewer.IsVerticalRailEnabled" Value="False"/>
                 <Setter Property="ScrollViewer.ZoomMode" Value="Disabled"/>
                 <Setter Property="ScrollViewer.IsDeferredScrollingEnabled" Value="False"/>
                 <Setter Property="ScrollViewer.BringIntoViewOnFocusChange" Value="True"/>
