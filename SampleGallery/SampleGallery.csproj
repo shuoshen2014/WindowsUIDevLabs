@@ -19,10 +19,11 @@
     <TargetPlatformMinVersion>10.0.16299.0</TargetPlatformMinVersion>
     <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
     <AppxBundle>Always</AppxBundle>
-    <AppxBundlePlatforms>x86|x64|arm</AppxBundlePlatforms>
+    <AppxBundlePlatforms>arm</AppxBundlePlatforms>
     <PackageCertificateKeyFile>SampleGallery_TemporaryKey.pfx</PackageCertificateKeyFile>
-    <PackageCertificateThumbprint>B3A5EDB57C0F21E52B5CFB1BDFD89039CD803898</PackageCertificateThumbprint>
+    <PackageCertificateThumbprint>CA8CBD89139B9DAB59859AB0F7A68F5A5639A5E3</PackageCertificateThumbprint>
     <RuntimeIdentifiers>win10-arm;win10-arm-aot;win10-x86;win10-x86-aot;win10-x64;win10-x64-aot</RuntimeIdentifiers>
+    <AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>false</SignAssembly>
@@ -405,7 +406,6 @@
     <Content Include="Assets\Windows_logo_Cyan_rgb_D.png" />
     <Content Include="Assets\ZOrderScrolling.jpg" />
     <Content Include="Samples\SDK 15063\Interactions3D\stage.jpg" />
-    <None Include="Package.StoreAssociation.xml" />
     <Content Include="Samples\SDK 10586\Perspective\jellyfish.jpg" />
     <Content Include="Samples\SDK 10586\TransitionAnimation-FlipToReveal\Image.jpg" />
     <Content Include="Samples\SDK 14393\ForegroundFocusEffects\Mask.png" />

@@ -92,7 +92,7 @@ namespace CompositionSampleGallery
             ElementCompositionPreview.SetElementChildVisual(OverlayRectangle, _blurredBackgroundImageVisual);
 
             // Create and start an ExpressionAnimation to track scroll progress over the desired distance
-            ExpressionNode progressAnimation = EF.Clamp(-scrollingProperties.Translation.Y / clampSizeNode, 0, 1);
+            ExpressionNode progressAnimation = EF.Clamp(-scrollingProperties.Translation.Y / clampSizeNode, 0f, 1f);
             _props.StartAnimation("progress", progressAnimation);
 
             // Create and start an ExpressionAnimation to animate blur radius between 0 and 15 based on progress

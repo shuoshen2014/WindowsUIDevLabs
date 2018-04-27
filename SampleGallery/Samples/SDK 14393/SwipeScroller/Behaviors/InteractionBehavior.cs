@@ -14,11 +14,16 @@
 
 using ExpressionBuilder;
 using Microsoft.Xaml.Interactivity;
+using SamplesCommon;
 using System;
+using System.Collections;
+using System.Diagnostics;
 using System.Numerics;
 using Windows.UI.Composition;
 using Windows.UI.Composition.Interactions;
+using Windows.UI.Input;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Hosting;
 
 using EF = ExpressionBuilder.ExpressionFunctions;
@@ -81,10 +86,62 @@ namespace CompositionSampleGallery.Samples.SDK_14393.SwipeScroller.Behaviors
             _props = _compositor.CreatePropertySet();
 
             Visual infoVisual = ElementCompositionPreview.GetElementVisual(InfoContent);
-            Visual photoVisual = ElementCompositionPreview.GetElementVisual(PhotoContent);
-            photoVisual.Size = new Vector2((float)PhotoContent.ActualWidth, (float)PhotoContent.ActualHeight);
 
-            photoVisual.CenterPoint = new Vector3((float)PhotoContent.ActualWidth * .5f, (float)PhotoContent.ActualHeight * .5f, 0f);
+            var scrollviewer = ((UIElement)PhotoContent).GetFirstAncestorOfType<ScrollViewer>();
+
+            var images = scrollviewer.GetDescendantsOfType<Image>();
+
+            FrameworkElement ele = null;
+            int i = 0;
+            FrameworkElement prev = null;
+            FrameworkElement current = null;
+            foreach (var cc in images)
+            {
+
+                ele = cc.GetFirstAncestorOfType<Grid>();
+
+                //if (((Models.PhotoModel)(ele.DataContext)).Name=="Athens")
+                //{
+
+                //}
+                if (i == 0)
+                {
+                    current = cc.GetFirstAncestorOfType<Grid>();
+                }
+                else
+                {
+                    prev = current;
+                    current = cc.GetFirstAncestorOfType<Grid>();
+                }
+
+                if (((Models.PhotoModel)(PhotoContent.DataContext)).Name == "Athens" && i == 9)
+                {
+                    ele = cc.GetFirstAncestorOfType<Grid>();
+                    break;
+                }
+                else
+                {
+                    if (((Models.PhotoModel)(PhotoContent.DataContext)).Name == ((Models.PhotoModel)(cc.GetFirstAncestorOfType<Grid>().DataContext)).Name)
+                    {
+                        if (i != 0)
+                        {
+                            ele = prev;
+                            break;
+                        }
+                    }
+                }
+                
+
+                i++;
+            }
+
+            //ele = PhotoContent;
+
+            Visual photoVisual = ElementCompositionPreview.GetElementVisual(ele);
+            //Visual photoVisual = ElementCompositionPreview.GetElementVisual(PhotoContent);
+            photoVisual.Size = new Vector2((float)ele.ActualWidth, (float)ele.ActualHeight);
+
+            photoVisual.CenterPoint = new Vector3((float)ele.ActualWidth * .5f, (float)ele.ActualHeight * .5f, 0f);
             infoVisual.CenterPoint = new Vector3((float)InfoContent.ActualWidth * .5f, (float)InfoContent.ActualHeight * .5f, 0f);
 
             VisualInteractionSource interactionSource = VisualInteractionSource.Create(_hittestVisual);
@@ -108,30 +165,82 @@ namespace CompositionSampleGallery.Samples.SDK_14393.SwipeScroller.Behaviors
 
             ConfigureRestingPoints();
 
+            HittestContent.PointerEntered += (s, a) =>
+            {
+                Debug.WriteLine("PointerEntered");
+
+            };
+
             HittestContent.PointerCanceled += (s, a) =>
             {
+                Debug.WriteLine("PointerCanceled");
 
+            };
+
+            HittestContent.PointerExited += (s, a) =>
+            {
+                Debug.WriteLine("PointerExited");
+
+            };
+
+            HittestContent.PointerMoved += (s, a) =>
+            {
+                Debug.WriteLine("PointerMoved");
+
+                //((UIElement)s).CancelDirectManipulations();
+
+                //Visual photoVisual2 = ElementCompositionPreview.GetElementVisual(HittestContent);
+                //photoVisual2.Size = new Vector2((float)PhotoContent.ActualWidth, (float)PhotoContent.ActualHeight);
+                //photoVisual2.Offset = new Vector3((float)a.GetCurrentPoint(s as UIElement).Position.X/2, (float)a.GetCurrentPoint(s as UIElement).Position.Y/2, 0.0f);
+                //interactionSource.TryRedirectForManipulation(a.GetCurrentPoint(s as UIElement));
             };
 
             HittestContent.PointerReleased += (s, a) =>
             {
+                Debug.WriteLine("PointerReleased");
+                //((UIElement)s).ReleasePointerCapture(a.Pointer);
 
+                var scrollviewer2 = ((UIElement)s).GetFirstAncestorOfType<ScrollViewer>();
+
+                //var scrollviewer = VisualTreeHelperExtensions.GetFirstDescendantOfType<ScrollViewer>(this);
+                //var images = scrollviewe.GetDescendantsOfType<Image>();
+
+                //foreach (var bb in scrollviewer)
+                {
+                    var images2 = scrollviewer2.GetDescendantsOfType<Image>();
+                    foreach (var cc in images2)
+                    {
+                    }
+                }
             };
-            HittestContent.PointerExited += (s, a) =>
+
+            HittestContent.PointerCaptureLost += (s, a) =>
             {
-                
+                Debug.WriteLine("PointerCaptureLost");
+            };
+
+            HittestContent.Holding += (s, a) =>
+            {
+                Debug.WriteLine("Holding");
+
+
             };
 
             HittestContent.PointerPressed += (s, a) =>
             {
+                Debug.WriteLine("PointerPressed");
+
                 // Capture the touch manipulation to the InteractionTracker for automatic handling
                 if (a.Pointer.PointerDeviceType == Windows.Devices.Input.PointerDeviceType.Touch ||
                 a.Pointer.PointerDeviceType == Windows.Devices.Input.PointerDeviceType.Pen 
                 )
                 {
+                    //((UIElement)s).CapturePointer(a.Pointer);
+                   // ((UIElement)s).CancelDirectManipulations();
+
                     try
                     {
-                        interactionSource.TryRedirectForManipulation(a.GetCurrentPoint(s as UIElement));
+                         interactionSource.TryRedirectForManipulation(a.GetCurrentPoint(s as UIElement));
                     }
                     catch (UnauthorizedAccessException)
                     {
@@ -195,11 +304,13 @@ namespace CompositionSampleGallery.Samples.SDK_14393.SwipeScroller.Behaviors
             // Create an animation that changes the offset of the photoVisual and shadowVisual based on the manipulation progress
             var photoOffsetExp = -1f * _props.GetReference().GetScalarProperty("Progress");
             var photoOffsetExp2 = -1f * _props.GetReference().GetScalarProperty("ProgressX");
+            var photoOffsetExp3 = 1f * _props.GetReference().GetScalarProperty("ProgressX");
 
+            //photoVisual.StartAnimation("offset.y", EF.Clamp(photoOffsetExp, 10f, 50f));
             photoVisual.StartAnimation("offset.y", photoOffsetExp);
             shadowVisual.StartAnimation("offset.y", photoOffsetExp);
 
-            photoVisual.StartAnimation("offset.x", photoOffsetExp2);
+            photoVisual.StartAnimation("offset.x", photoOffsetExp3);
             shadowVisual.StartAnimation("offset.x", photoOffsetExp2);
 
             // Create an animation that fades in the info visual based on the manipulation progress
@@ -235,31 +346,37 @@ namespace CompositionSampleGallery.Samples.SDK_14393.SwipeScroller.Behaviors
         #region Callbacks
         public void CustomAnimationStateEntered(InteractionTracker sender, InteractionTrackerCustomAnimationStateEnteredArgs args)
         {
-            
+            Debug.WriteLine("CustomAnimationStateEntered");
+
         }
 
         public void IdleStateEntered(InteractionTracker sender, InteractionTrackerIdleStateEnteredArgs args)
         {
-            
+            Debug.WriteLine("IdleStateEntered");
+
         }
 
         public void InertiaStateEntered(InteractionTracker sender, InteractionTrackerInertiaStateEnteredArgs args)
         {
-            
+            Debug.WriteLine("InertiaStateEntered");
+
         }
 
         public void InteractingStateEntered(InteractionTracker sender, InteractionTrackerInteractingStateEnteredArgs args)
         {
-            
+            Debug.WriteLine("InteractingStateEntered");
+
         }
 
         public void RequestIgnored(InteractionTracker sender, InteractionTrackerRequestIgnoredArgs args)
         {
-            
+            Debug.WriteLine("RequestIgnored");
+
         }
 
         public void ValuesChanged(InteractionTracker sender, InteractionTrackerValuesChangedArgs args)
         {
+            //Debug.WriteLine("ValuesChanged");
             // Store whether the item is expanded in order to know whether a mouse click should expand or collapse 
             _isExpanded = (args.Position.Y > 0); 
         }
@@ -267,6 +384,7 @@ namespace CompositionSampleGallery.Samples.SDK_14393.SwipeScroller.Behaviors
 
         public void Attach(DependencyObject associatedObject)
         {
+            Debug.WriteLine("Attach");
             AssociatedObject = associatedObject;
             _hittestVisual = ElementCompositionPreview.GetElementVisual(HittestContent);
 
@@ -280,6 +398,7 @@ namespace CompositionSampleGallery.Samples.SDK_14393.SwipeScroller.Behaviors
 
         public void Detach()
         {
+            Debug.WriteLine("Detach");
             _tracker.Dispose();
             _tracker = null;
             _hittestVisual = null;

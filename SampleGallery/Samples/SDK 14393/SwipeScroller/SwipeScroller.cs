@@ -14,9 +14,11 @@
 
 using CompositionSampleGallery.Samples.SDK_14393.SwipeScroller.Models;
 using CompositionSampleGallery.Shared;
+using SamplesCommon;
 using System;
 using System.Collections.Generic;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
 
 namespace CompositionSampleGallery
 {
@@ -49,6 +51,7 @@ namespace CompositionSampleGallery
                 });
             }
             Items.ItemsSource = list;
+            //Items2.ItemsSource = list;
         }
     }
 }

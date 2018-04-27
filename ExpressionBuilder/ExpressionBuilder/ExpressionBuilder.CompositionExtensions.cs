@@ -6,6 +6,7 @@
 
 namespace ExpressionBuilder
 {
+    using System.Diagnostics;
     using Windows.UI.Composition;
     using Windows.UI.Composition.Interactions;
 
@@ -106,7 +107,9 @@ namespace ExpressionBuilder
             // Only create a new animation if this node hasn't already generated one before, so we don't have to re-parse the expression string.
             if (expressionNode._expressionAnimation == null)
             {
-                expressionNode._expressionAnimation = compositor.CreateExpressionAnimation(expressionNode.ToExpressionString());
+                string expression = expressionNode.ToExpressionString();
+                Debug.WriteLine(expression);
+                expressionNode._expressionAnimation = compositor.CreateExpressionAnimation(expression);
             }
 
             // We need to make sure all parameters are up to date, even if the animation already existed.

@@ -10,15 +10,64 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d" Loaded="Page_Loaded">
 
-    <Grid>
+    <Grid x:Name="root">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
         <Grid.Background>
             <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                 <GradientStop Color="#FF3062B9" Offset="0"/>
                 <GradientStop Color="#FFBBCEF1" Offset="1"/>
             </LinearGradientBrush>
         </Grid.Background>
-        <ScrollViewer VerticalScrollMode="Auto" HorizontalScrollMode="Disabled" HorizontalScrollBarVisibility="Auto">
+        <ScrollViewer Grid.Row="0" VerticalScrollMode="Auto" HorizontalScrollMode="Auto" HorizontalScrollBarVisibility="Auto">
             <ItemsControl x:Name="Items">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <ItemsStackPanel Orientation="Horizontal"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="models:PhotoModel">
+                        <Grid Margin="50">
+                            <Canvas x:Name ="InfoCanvas" Width="100" Height="150" >
+                                <Grid x:Name="Info" Width="100" Height="150" Background="White">
+                                    <StackPanel VerticalAlignment="Bottom">
+                                        <TextBlock Text="{x:Bind Details}" FontSize="16" TextWrapping="Wrap" FontWeight="Light" Margin="4,0"/>
+                                        <TextBlock Text="{x:Bind Info}" FontSize="24" FontWeight="Light" Margin="4,0"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Canvas>
+                            <Grid x:Name="Image" Width="100" Height="150">
+                                <!--Insert Canvas control to workaround XAML-COMP interop with property sharing-->
+                                <Canvas>
+                                    <Grid x:Name="Photo" Width="100" Height="150">
+                                        <Image Width="100" Height="150" Stretch="UniformToFill">
+                                            <Image.Source>
+                                                <BitmapImage UriSource ="{x:Bind Image}"/>
+                                            </Image.Source>
+                                        </Image>
+                                        <TextBlock x:Name="NameText" Text="{x:Bind Name}" VerticalAlignment="Top" FontSize="30" Foreground="White" Margin="4,0,0,0"/>
+                                    </Grid>
+                                </Canvas>
+                            </Grid>
+                            <interactivity:Interaction.Behaviors>
+                                <behaviors:InteractionBehavior HittestContent="{Binding ElementName=Image}" InfoContent="{Binding ElementName=Info}" PhotoContent="{Binding ElementName=Photo}" InfoContainer ="{Binding ElementName=InfoCanvas}" />
+                            </interactivity:Interaction.Behaviors>
+                        </Grid>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+        <ScrollViewer Grid.Row="1" VerticalScrollMode="Auto" HorizontalScrollMode="Auto" HorizontalScrollBarVisibility="Auto">
+            <ItemsControl x:Name="Items2">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <StackPanel Orientation="Horizontal"/>
@@ -27,19 +76,19 @@
                 <ItemsControl.ItemTemplate>
                     <DataTemplate x:DataType="models:PhotoModel">
                         <Grid Margin="50">
-                            <Canvas x:Name ="InfoCanvas" Width="200" Height="300" >
-                                <Grid x:Name="Info" Width="200" Height="300" Background="White">
+                            <Canvas x:Name ="InfoCanvas" Width="100" Height="150" >
+                                <Grid x:Name="Info" Width="100" Height="150" Background="White">
                                     <StackPanel VerticalAlignment="Bottom">
                                         <TextBlock Text="{x:Bind Details}" FontSize="16" TextWrapping="Wrap" FontWeight="Light" Margin="4,0"/>
                                         <TextBlock Text="{x:Bind Info}" FontSize="24" FontWeight="Light" Margin="4,0"/>
                                     </StackPanel>
                                 </Grid>
                             </Canvas>
-                            <Grid x:Name="Image" Width="200" Height="300">
+                            <Grid x:Name="Image" Width="100" Height="150">
                                 <!--Insert Canvas control to workaround XAML-COMP interop with property sharing-->
                                 <Canvas>
-                                    <Grid x:Name="Photo" Width="200" Height="300">
-                                        <Image Width="200" Height="300" Stretch="UniformToFill">
+                                    <Grid x:Name="Photo" Width="100" Height="150">
+                                        <Image Width="100" Height="150" Stretch="UniformToFill">
                                             <Image.Source>
                                                 <BitmapImage UriSource ="{x:Bind Image}"/>
                                             </Image.Source>

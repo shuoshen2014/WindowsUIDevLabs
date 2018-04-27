@@ -161,7 +161,7 @@ namespace CompositionSampleGallery
             {
                 // If not previously clicked, then scale to large size
                 _imageClickScaleMode = true;
-                _springAnimation.FinalValue = new Vector3(3.0f);
+                _springAnimation.FinalValue = new Vector3(6.0f);
             }
             else
             {

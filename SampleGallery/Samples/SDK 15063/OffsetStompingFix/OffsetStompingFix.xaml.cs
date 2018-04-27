@@ -67,13 +67,13 @@ namespace CompositionSampleGallery
             var animation = compositor.CreateScalarKeyFrameAnimation();
 
             //Enable The new Translation property
-            ElementCompositionPreview.SetIsTranslationEnabled(Rectangle1, true);
+            //ElementCompositionPreview.SetIsTranslationEnabled(Rectangle1, true);
 
             //now intialize the Value of Translation in the Popertyset to Zero for first use to avoid timing issues. This ensures that
             //the property is ready for use immediately.
 
-            var rect1VisaulPropertySet = ElementCompositionPreview.GetElementVisual(Rectangle1).Properties;
-            rect1VisaulPropertySet.InsertVector3("Translation", Vector3.Zero);
+            //var rect1VisaulPropertySet = ElementCompositionPreview.GetElementVisual(Rectangle1).Properties;
+            //rect1VisaulPropertySet.InsertVector3("Translation", Vector3.Zero);
 
             //Animation   
             animation.InsertExpressionKeyFrame(0, "this.StartingValue");
@@ -115,8 +115,8 @@ namespace CompositionSampleGallery
         {
             var visual = ElementCompositionPreview.GetElementVisual(element);
 
-            visual.StopAnimation("Translation.Y");
-            visual.StartAnimation("Translation.Y", animation);
+            visual.StopAnimation("Offset.Y");
+            visual.StartAnimation("Offset.Y", animation);
         }
 
         private void StartAnimation2(UIElement element, KeyFrameAnimation animation2)

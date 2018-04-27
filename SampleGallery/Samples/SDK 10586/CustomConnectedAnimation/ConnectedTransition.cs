@@ -98,7 +98,7 @@ namespace CompositionSampleGallery
             ElementCompositionPreview.SetElementChildVisual(_parent, transitionVisual);
 
             // Hide the target Image now since the handoff visual is still transitioning
-            targetImage.Opacity = 0f;
+            targetImage.Opacity = 1f;
 
             // Load image if necessary
             _imageLoaded = targetImage.IsContentLoaded;
@@ -114,6 +114,7 @@ namespace CompositionSampleGallery
 
             Compositor compositor = transitionVisual.Compositor;
             _scopeBatch = compositor.CreateScopedBatch(CompositionBatchTypes.Animation);
+            _scopeBatch = compositor.CreateScopedBatch(CompositionBatchTypes.Animation);
 
             //
             // Determine the offset between the parent and the target UIElement.  This will be used to calculate the
@@ -123,7 +124,8 @@ namespace CompositionSampleGallery
             coordinate = targetImage.TransformToVisual(_parent);
             position = coordinate.TransformPoint(new Point(0, 0));
 
-            TimeSpan totalDuration = TimeSpan.FromMilliseconds(1000);
+            TimeSpan totalDuration = TimeSpan.FromMilliseconds(5000);
+            TimeSpan totalDuration2 = TimeSpan.FromMilliseconds(10000);
             Vector3KeyFrameAnimation offsetAnimation = compositor.CreateVector3KeyFrameAnimation();
 
             if (scrollViewer != null)
@@ -142,9 +144,10 @@ namespace CompositionSampleGallery
 
                 var scrollPropSet = scrollProperties.GetSpecializedReference<ManipulationPropertySetReferenceNode>();
                 var itemOffset = new Vector3((float)position.X, (float)position.Y, 0);
+                //var itemOffset = new Vector3((float)0, (float)0, 0);
                 var expression = EF.Vector3(scrollPropSet.Translation.X, scrollPropSet.Translation.Y, 0) + itemOffset ;
                 offsetAnimation.InsertExpressionKeyFrame(1f, expression);
-                offsetAnimation.Duration = totalDuration;
+                offsetAnimation.Duration = totalDuration2;
             }
             else
             {
